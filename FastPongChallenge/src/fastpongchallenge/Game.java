@@ -6,8 +6,10 @@
 package fastpongchallenge;
 
 import fastpongchallenge.Entities.Ball;
+import fastpongchallenge.States.MenuState;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
+import fastpongchallenge.States.PlayingState;
 
 /**
  *
@@ -16,23 +18,19 @@ import java.awt.image.BufferStrategy;
 public class Game{
     
     private static Window game;
-    private Thread thread;
+    private GameState gameState;
     private Entity ent = new Ball();
     
     private boolean running = false;
-    /**
-     * @param args the command line arguments
-     */
+
     
-    public Game() {
+    public Game(GameState state) {
         game = new Window();
+        gameState = state;
         start();
     }
-    public static void main(String[] args) {
-        new Game();
-    }
     
-    public void start() {
+    private void start() {
         if (running) return;
         running = true;
         run();
@@ -72,8 +70,7 @@ public class Game{
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
         ///////////
         //DIBUJAR
-        g.fillRect(0, 0, Window.GAMEWIDTH, Window.GAMEHEIGHT);
-        renderEntity(ent, g);
+        gameState.render(g);
         ///////////
         g.dispose();
         bs.show();
@@ -81,12 +78,14 @@ public class Game{
     }
 
     private void tick() {
-        ent.update();
-    }
-
-    private void renderEntity(Entity ent, Graphics2D g) {
-        g.setColor(ent.getColor());
-        g.draw(ent.getRenderObject());
+        gameState.update();
     }
     
+    public void setState(GameState state) {
+        gameState = state;
+    }
+    
+    public static void main(String[] args) {
+        new Game(new MenuState());
+    }
 }
